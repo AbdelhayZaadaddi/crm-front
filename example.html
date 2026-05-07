@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumen — Customer Ops</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-primary: #1a9e7f;
+    --green-hover: #158a6d;
+    --green-light: #e6f7f3;
+    --green-soft: #d0f0e8;
+    --bg: #f4f5f7;
+    --sidebar-bg: #1e2124;
+    --white: #ffffff;
+    --text-primary: #1a1d20;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --border: #e5e7eb;
+    --border-focus: #1a9e7f;
+    --input-bg: #f9fafb;
+    --error: #ef4444;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.13);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Layout ── */
+  .auth-wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* ── Left Panel ── */
+  .left-panel {
+    width: 340px;
+    min-width: 340px;
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    padding: 48px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .left-panel::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(26,158,127,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .left-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(26,158,127,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 56px;
+  }
+
+  .brand-icon {
+    width: 38px; height: 38px;
+    background: var(--green-primary);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    display: flex; flex-direction: column;
+  }
+
+  .brand-name {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+  }
+
+  .brand-sub {
+    color: #6b7f7a;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .left-headline {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+  }
+
+  .left-headline span {
+    color: var(--green-primary);
+  }
+
+  .left-desc {
+    color: #8a9ea0;
+    font-size: 13.5px;
+    line-height: 1.65;
+    margin-bottom: 40px;
+  }
+
+  .stat-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: auto;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .stat-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .stat-dot.green { background: var(--green-primary); }
+  .stat-dot.orange { background: #f59e0b; }
+  .stat-dot.blue { background: #60a5fa; }
+
+  .stat-info { flex: 1; }
+  .stat-label { color: #8a9ea0; font-size: 11.5px; margin-bottom: 2px; }
+  .stat-value { color: #fff; font-size: 14px; font-weight: 500; }
+
+  .left-footer {
+    margin-top: 36px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 20px;
+    color: #4b5563;
+    font-size: 11.5px;
+    line-height: 1.6;
+  }
+
+  /* ── Right Panel ── */
+  .right-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    background: var(--bg);
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 9px 0;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .tab-btn.active {
+    background: var(--green-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(26,158,127,0.25);
+  }
+
+  /* ── Card ── */
+  .form-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 32px 32px 28px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .form-header {
+    margin-bottom: 26px;
+  }
+
+  .form-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+    margin-bottom: 5px;
+  }
+
+  .form-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ── Fields ── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.1px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+
+  input::placeholder { color: var(--text-muted); font-size: 13px; }
+
+  input:focus {
+    border-color: var(--border-focus);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(26,158,127,0.1);
+  }
+
+  /* ── Checkbox ── */
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 18px;
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 15px; height: 15px;
+    accent-color: var(--green-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .checkbox-row label {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .checkbox-row a {
+    color: var(--green-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  /* ── Forgot ── */
+  .forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -8px;
+    margin-bottom: 18px;
+  }
+
+  .forgot-row a {
+    font-size: 12px;
+    color: var(--green-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  /* ── Button ── */
+  .btn-primary {
+    width: 100%;
+    padding: 10.5px;
+    background: var(--green-primary);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    letter-spacing: 0.1px;
+    box-shadow: 0 2px 10px rgba(26,158,127,0.25);
+  }
+
+  .btn-primary:hover {
+    background: var(--green-hover);
+    box-shadow: 0 4px 16px rgba(26,158,127,0.35);
+  }
+
+  .btn-primary:active { transform: translateY(1px); }
+
+  /* ── Divider ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--text-muted);
+    font-size: 11.5px;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── SSO Button ── */
+  .btn-sso {
+    width: 100%;
+    padding: 9.5px;
+    background: var(--white);
+    color: var(--text-primary);
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .btn-sso:hover {
+    border-color: #ccc;
+    background: var(--input-bg);
+  }
+
+  .sso-icon {
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Bottom note ── */
+  .form-note {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  .form-note a {
+    color: var(--green-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  /* ── Role selector ── */
+  .role-select {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.15s;
+  }
+
+  .role-select:focus {
+    border-color: var(--border-focus);
+    background-color: var(--white);
+    box-shadow: 0 0 0 3px rgba(26,158,127,0.1);
+  }
+
+  /* ── Strength bar ── */
+  .strength-wrap {
+    margin-top: 6px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .strength-bar {
+    height: 3px;
+    flex: 1;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .strength-bar.filled { background: var(--green-primary); }
+  .strength-bar.filled.weak { background: #ef4444; }
+  .strength-bar.filled.medium { background: #f59e0b; }
+
+  /* ── Page switcher ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Animations ── */
+  .form-card {
+    animation: cardIn 0.28s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 700px) {
+    .left-panel { display: none; }
+    .right-panel { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-icon">L</div>
+      <div class="brand-text">
+        <span class="brand-name">Lumen</span>
+        <span class="brand-sub">Customer Ops</span>
+      </div>
+    </div>
+
+    <h2 class="left-headline">Your workspace,<br><span>always in sync.</span></h2>
+    <p class="left-desc">Manage customers, tasks, and campaigns from one unified platform built for ops teams.</p>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-dot green"></div>
+        <div class="stat-info">
+          <div class="stat-label">Open tasks</div>
+          <div class="stat-value">8 active</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-dot orange"></div>
+        <div class="stat-info">
+          <div class="stat-label">Active campaigns</div>
+          <div class="stat-value">3 running</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-dot blue"></div>
+        <div class="stat-info">
+          <div class="stat-label">Customers</div>
+          <div class="stat-value">15 accounts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="left-footer">
+      © 2026 Lumen · Privacy · Terms
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="form-container">
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('login', this)">Sign in</button>
+        <button class="tab-btn" onclick="switchTab('register', this)">Create account</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="page active" id="login">
+        <div class="form-card">
+          <div class="form-header">
+            <div class="form-title">Welcome back</div>
+            <div class="form-subtitle">Sign in to your Lumen workspace</div>
+          </div>
+
+          <div class="field">
+            <label for="login-email">Work email</label>
+            <input type="email" id="login-email" placeholder="you@company.com" autocomplete="email">
+          </div>
+
+          <div class="field">
+            <label for="login-pass">Password</label>
+            <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+          </div>
+
+          <div class="forgot-row">
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button class="btn-primary" onclick="handleLogin()">Sign in</button>
+
+          <div class="divider">or continue with</div>
+
+          <button class="btn-sso">
+            <span class="sso-icon">
+              <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908C16.658 14.114 17.64 11.849 17.64 9.2z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+                <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A9.009 9.009 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
+            </span>
+            Continue with Google
+          </button>
+        </div>
+
+        <p class="form-note">Don't have an account? <a href="#" onclick="switchTabByName('register')">Create one →</a></p>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="page" id="register">
+        <div class="form-card">
+          <div class="form-header">
+            <div class="form-title">Create your account</div>
+            <div class="form-subtitle">Get started with Lumen Customer Ops</div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="reg-first">First name</label>
+              <input type="text" id="reg-first" placeholder="Amelia">
+            </div>
+            <div class="field">
+              <label for="reg-last">Last name</label>
+              <input type="text" id="reg-last" placeholder="Cortez">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="reg-email">Work email</label>
+            <input type="email" id="reg-email" placeholder="you@company.com">
+          </div>
+
+          <div class="field">
+            <label for="reg-role">Role</label>
+            <select class="role-select" id="reg-role">
+              <option value="">Select your role…</option>
+              <option>Admin</option>
+              <option>Account Manager</option>
+              <option>Customer Success</option>
+              <option>Operations Lead</option>
+              <option>Sales</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="reg-pass">Password</label>
+            <input type="password" id="reg-pass" placeholder="Min. 8 characters" oninput="checkStrength(this.value)">
+            <div class="strength-wrap" id="strength-wrap">
+              <div class="strength-bar" id="s1"></div>
+              <div class="strength-bar" id="s2"></div>
+              <div class="strength-bar" id="s3"></div>
+              <div class="strength-bar" id="s4"></div>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="terms">
+            <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+          </div>
+
+          <button class="btn-primary" onclick="handleRegister()">Create account</button>
+
+          <div class="divider">or</div>
+
+          <button class="btn-sso">
+            <span class="sso-icon">
+              <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908C16.658 14.114 17.64 11.849 17.64 9.2z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+                <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A9.009 9.009 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
+            </span>
+            Sign up with Google
+          </button>
+        </div>
+
+        <p class="form-note">Already have an account? <a href="#" onclick="switchTabByName('login')">Sign in →</a></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  function switchTabByName(id) {
+    const btns = document.querySelectorAll('.tab-btn');
+    const idx = id === 'login' ? 0 : 1;
+    switchTab(id, btns[idx]);
+  }
+
+  function checkStrength(val) {
+    const bars = [s1, s2, s3, s4];
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const cls = score <= 1 ? 'weak' : score <= 2 ? 'medium' : '';
+    bars.forEach((b, i) => {
+      b.className = 'strength-bar' + (i < score ? ' filled ' + cls : '');
+    });
+  }
+
+  function handleLogin() {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-pass').value;
+    if (!email || !pass) {
+      alert('Please fill in all fields.');
+      return;
+    }
+    alert('Signing in as ' + email + '…');
+  }
+
+  function handleRegister() {
+    const first = document.getElementById('reg-first').value;
+    const email = document.getElementById('reg-email').value;
+    const pass = document.getElementById('reg-pass').value;
+    const terms = document.getElementById('terms').checked;
+    if (!first || !email || !pass) { alert('Please fill in all required fields.'); return; }
+    if (!terms) { alert('Please accept the Terms of Service.'); return; }
+    alert('Account created for ' + email + '!');
+  }
+</script>
+</body>
+</html>
