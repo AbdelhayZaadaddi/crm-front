@@ -54,17 +54,18 @@ function initials(name: string) {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const [user, setUser] = useState<User | null>(null)
 
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null
+    const cached = localStorage.getItem('user')
+    return cached ? (JSON.parse(cached) as User) : null
+  })
 
   useEffect(() => {
-    const cached = localStorage.getItem('user')
-    const initial = cached ? (JSON.parse(cached) as User) : null
     getMe().then(u => {
       setUser(u)
       localStorage.setItem('user', JSON.stringify(u))
     })
-    if (initial) setUser(initial)
   }, [])
 
   function handleNameSaved(updated: User) {

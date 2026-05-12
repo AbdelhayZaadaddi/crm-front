@@ -35,15 +35,15 @@ function initials(name: string) {
 }
 
 export default function Sidebar() {
-  const pathname = usePathname()
-  const [user, setUser] = useState<User | null>(null)
-  const [loggingOut, setLoggingOut] = useState(false)
-  const { confirm } = useAlert()
+    const [user, setUser] = useState<User | null>(() => {
+        if (typeof window === 'undefined') return null
+        const cached = localStorage.getItem('user')
+        return cached ? (JSON.parse(cached) as User) : null
+    })
+    const [loggingOut, setLoggingOut] = useState(false)
+    const { confirm } = useAlert()
 
     useEffect(() => {
-        const cached = localStorage.getItem('user')
-        const initial = cached ? (JSON.parse(cached) as User) : null
-
         api
             .get<User>('/api/user/me')
             .then(res => {
@@ -53,8 +53,6 @@ export default function Sidebar() {
             .catch(() => {
                 // axios interceptor handles expired-token redirect
             })
-
-        if (initial) setUser(initial)
     }, [])
 
   async function handleLogout() {
