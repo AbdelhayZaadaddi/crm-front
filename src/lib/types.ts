@@ -82,3 +82,23 @@ export interface CustomerRequest {
   company?: string | null
    notes? : string |   null
 }
+
+// Campaign ___________________________________-
+export type CampaignStatus = 'DRAFT' | 'SENT'
+
+export interface Campaign {
+  id: number
+  name: string
+  subject: string | null
+  body: string | null
+  status:  CampaignStatus
+  sentAt: string | null
+  createdAt: string
+  updatedAt :  string
+}
+
+export interface CampaignRequest {
+  name: string
+  subject?: string  | null
+   body?: string | null
+}
