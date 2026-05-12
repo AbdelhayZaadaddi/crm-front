@@ -43,7 +43,7 @@ export default function CampaignsPage() {
     async function handleSend(campaign: Campaign) {
         const ok = await confirm({
             title: 'Send Campaign',
-            message: `This will send "${campaign.name}" to all customers. This cannot be undone.`,
+            message: `This will send "${campaign. name}" to all customers. This cannot be undone.`,
              confirmLabel: 'Send',
             cancelLabel: 'Cancel',
             variant: 'warning',
@@ -52,10 +52,17 @@ export default function CampaignsPage() {
 
         setSending(campaign.id)
         try {
-            const updated = await sendCampaign(campaign.id)
+            const updated = await sendCampaign(campaign. id  )
             setCampaigns(prev => prev.map(c => (c.id === campaign.id ? updated : c)))
+        } catch {
+            // fix  :
+            // email was sent successfully but Mailtrap rate limit caused a 500 on the response
+            // refresh the list to get the real status from the server
+
+            const fresh = await getCampaigns()
+            setCampaigns(fresh)
         } finally {
-            setSending(null)
+            setSending(null  )
         }
     }
 
