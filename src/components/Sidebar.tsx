@@ -40,21 +40,22 @@ export default function Sidebar() {
   const [loggingOut, setLoggingOut] = useState(false)
   const { confirm } = useAlert()
 
-  useEffect(() => {
-    // Seed from cache immediately so the name appears without waiting for the API
-    const cached = localStorage.getItem('user')
-    if (cached) setUser(JSON.parse(cached) as User)
+    useEffect(() => {
+        const cached = localStorage.getItem('user')
+        const initial = cached ? (JSON.parse(cached) as User) : null
 
-    api
-      .get<User>('/api/user/me')
-      .then(res => {
-        setUser(res.data)
-        localStorage.setItem('user', JSON.stringify(res.data))
-      })
-      .catch(() => {
-        // axios interceptor handles expired-token redirect
-      })
-  }, [])
+        api
+            .get<User>('/api/user/me')
+            .then(res => {
+                setUser(res.data)
+                localStorage.setItem('user', JSON.stringify(res.data))
+            })
+            .catch(() => {
+                // axios interceptor handles expired-token redirect
+            })
+
+        if (initial) setUser(initial)
+    }, [])
 
   async function handleLogout() {
     const ok = await confirm({

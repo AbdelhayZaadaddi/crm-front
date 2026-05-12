@@ -56,13 +56,15 @@ function initials(name: string) {
 export default function SettingsPage() {
   const [user, setUser] = useState<User | null>(null)
 
+
   useEffect(() => {
     const cached = localStorage.getItem('user')
-    if (cached) setUser(JSON.parse(cached) as User)
+    const initial = cached ? (JSON.parse(cached) as User) : null
     getMe().then(u => {
       setUser(u)
       localStorage.setItem('user', JSON.stringify(u))
     })
+    if (initial) setUser(initial)
   }, [])
 
   function handleNameSaved(updated: User) {
