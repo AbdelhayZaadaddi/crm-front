@@ -70,7 +70,7 @@ export default function CustomersPage() {
                 ) : customers.length === 0 ? (
                     <div  className="flex flex-col items-center justify-center h-64 text-center">
                         <p className="text-[14px] text-[#9ca3af]">No customers yet</p>
-                        <p className="text-[12.5px] text-[#c4cac9] mt-1">Click "New Customer" to add one</p>
+                        <p className="text-[12.5px] text-[#c4cac9] mt-1">Click &ldquo;New Customer&rdquo; to add one</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
