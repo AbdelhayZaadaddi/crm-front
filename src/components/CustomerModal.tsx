@@ -38,7 +38,7 @@ export default function CustomerModal({ customer, onSave, onClose }: Props) {
             await onSave(form, customer?.id   )
         } catch (err: unknown) {
             const data = (err as { response?: { data?: Record<string, string> } }).response?.data
-             if (  data && typeof data === 'object ') setErrors(data)
+            if (data && typeof data === 'object' && !Array.isArray(data)) setErrors(data)
         } finally {
             setLoading (false  )
         }

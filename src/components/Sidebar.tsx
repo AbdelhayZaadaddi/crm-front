@@ -35,8 +35,8 @@ function initials(name: string) {
 }
 
 export default function Sidebar() {
-    const [user, setUser] = useState<User | null>(() => {
-        if (typeof window === 'undefined') return null
+    const pathname = usePathname()
+    const [user, setUser] = useState<User | null>(() => {        if (typeof window === 'undefined') return null
         const cached = localStorage.getItem('user')
         return cached ? (JSON.parse(cached) as User) : null
     })
