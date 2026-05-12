@@ -62,3 +62,23 @@ export interface TaskRequest {
   deadline?: string | null
   assignedUserId?: number | null
 }
+
+//---- Customers ---------------------------------
+export interface Customer {
+  id: number
+  name:  string
+  email: string | null
+  phone: string | null
+  company: string | null
+  notes: string | null
+  createdAt: string
+   updatedAt : string
+}
+
+export interface CustomerRequest {
+  name: string
+  email? : string | null
+  phone?: string | null
+  company?: string | null
+   notes? : string |   null
+}
