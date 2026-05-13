@@ -36,23 +36,21 @@ function initials(name: string) {
 
 export default function Sidebar() {
     const pathname = usePathname()
-    const [user, setUser] = useState<User | null>(() => {        if (typeof window === 'undefined') return null
-        const cached = localStorage.getItem('user')
-        return cached ? (JSON.parse(cached) as User) : null
-    })
+    const [user, setUser] = useState<User | null>(null)
     const [loggingOut, setLoggingOut] = useState(false)
     const { confirm } = useAlert()
 
     useEffect(() => {
+        const cached = localStorage.getItem('user')
+        if (cached) setUser(JSON.parse(cached) as User)
+
         api
             .get<User>('/api/user/me')
             .then(res => {
                 setUser(res.data)
                 localStorage.setItem('user', JSON.stringify(res.data))
             })
-            .catch(() => {
-                // axios interceptor handles expired-token redirect
-            })
+            .catch(() => {})
     }, [])
 
   async function handleLogout() {

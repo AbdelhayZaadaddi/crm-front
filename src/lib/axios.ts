@@ -24,7 +24,7 @@ api.interceptors.response.use(
       status === 403 ||
       (status === 500 && message.toLowerCase().includes('jwt expired'))
 
-    if (isExpiredJwt && typeof window !== 'undefined') {
+    if (isExpiredJwt && typeof window !== 'undefined' && localStorage.getItem('token')) {
       localStorage.removeItem('token')
       document.cookie = 'token=; path=/; max-age=0; SameSite=Lax'
       window.location.href = '/login'
