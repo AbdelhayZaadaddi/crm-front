@@ -55,13 +55,12 @@ function initials(name: string) {
 
 export default function SettingsPage() {
 
-  const [user, setUser] = useState<User | null>(() => {
-    if (typeof window === 'undefined') return null
-    const cached = localStorage.getItem('user')
-    return cached ? (JSON.parse(cached) as User) : null
-  })
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
+    const cached = localStorage.getItem('user')
+    if (cached) setUser(JSON.parse(cached) as User)
+
     getMe().then(u => {
       setUser(u)
       localStorage.setItem('user', JSON.stringify(u))

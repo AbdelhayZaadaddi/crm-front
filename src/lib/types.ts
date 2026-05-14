@@ -83,6 +83,39 @@ export interface CustomerRequest {
    notes? : string |   null
 }
 
+// Analytics ──────────────────────────────────
+export interface OverviewResponse {
+  totalCustomers: number
+  newCustomersThisMonth: number
+  totalCampaigns: number
+  sentCampaigns: number
+  draftCampaigns: number
+  totalTasks: number
+  todoTasks: number
+  inProgressTasks: number
+  doneTasks: number
+  cancelledTasks: number
+  overdueTasks: number
+}
+
+export interface MonthlyCountDTO {
+  year: number
+  month: number
+  label: string
+  count: number
+}
+
+export interface DistributionEntry {
+  label: string
+  count: number
+}
+
+export interface TaskByUserDTO {
+  userId: number
+  userName: string
+  taskCount: number
+}
+
 // Campaign ___________________________________-
 export type CampaignStatus = 'DRAFT' | 'SENT'
 
