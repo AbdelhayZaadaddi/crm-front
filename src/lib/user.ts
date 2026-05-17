@@ -4,6 +4,9 @@ import type { User } from './types'
 export const getMe = (): Promise<User> =>
   api.get<User>('/api/user/me').then(r => r.data)
 
+export const getUsers = (): Promise<User[]> =>
+  api.get<User[]>('/api/users').then(r => r.data)
+
 export const updateName = (name: string): Promise<User> =>
   api.patch<User>('/api/user/me/name', { name }).then(r => r.data)
 

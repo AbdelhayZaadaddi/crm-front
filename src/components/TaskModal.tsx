@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { X } from 'lucide-react'
-import type { Task, TaskRequest, TaskType, TaskStatus, TaskPriority } from '@/lib/types'
+import type { Task, TaskRequest, TaskType, TaskStatus, TaskPriority, User } from '@/lib/types'
 
 const inputClass =
   'w-full px-3 py-[9px] text-[13.5px] bg-gray-50 border border-gray-200 rounded-lg text-[#1a1d20] outline-none placeholder:text-[#9ca3af] focus:border-[#1a9e7f] focus:bg-white focus:shadow-[0_0_0_3px_rgba(26,158,127,0.1)] transition-all'
@@ -10,11 +10,13 @@ const labelClass = 'block text-[12px] font-medium text-[#6b7280] mb-1.5'
 
 interface Props {
   task: Task | null
+  users: User[]
+  currentUserId: number | null
   onSave: (data: TaskRequest, id?: number) => Promise<void>
   onClose: () => void
 }
 
-export default function TaskModal({ task, onSave, onClose }: Props) {
+export default function TaskModal({ task, users, currentUserId, onSave, onClose }: Props) {
   const [form, setForm] = useState<TaskRequest>({
     title: task?.title ?? '',
     description: task?.description ?? '',
@@ -22,7 +24,7 @@ export default function TaskModal({ task, onSave, onClose }: Props) {
     status: task?.status ?? 'TODO',
     priority: task?.priority ?? 'MEDIUM',
     deadline: task?.deadline ? task.deadline.slice(0, 16) : '',
-    assignedUserId: task?.assignedUserId ?? null,
+    assignedUserId: task?.assignedUserId ?? currentUserId ?? null,
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -163,19 +165,37 @@ export default function TaskModal({ task, onSave, onClose }: Props) {
             </div>
           </div>
 
-          {/* Assigned User ID */}
+          {/* Assigned User */}
           <div>
-            <label className={labelClass}>Assigned User ID</label>
-            <input
-              type="number"
-              value={form.assignedUserId ?? ''}
-              onChange={e =>
-                setField('assignedUserId', e.target.value ? Number(e.target.value) : null)
-              }
-              placeholder="Leave empty to unassign"
-              min={1}
-              className={inputClass}
-            />
+            <label className={labelClass}>Assigned To</label>
+            {users.length > 0 ? (
+              <select
+                value={form.assignedUserId ?? ''}
+                onChange={e =>
+                  setField('assignedUserId', e.target.value ? Number(e.target.value) : null)
+                }
+                className={inputClass}
+              >
+                <option value="">Unassigned</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                    {u.id === currentUserId ? ' (you)' : ''}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="number"
+                value={form.assignedUserId ?? ''}
+                onChange={e =>
+                  setField('assignedUserId', e.target.value ? Number(e.target.value) : null)
+                }
+                placeholder="Leave empty to unassign"
+                min={1}
+                className={inputClass}
+              />
+            )}
           </div>
 
           {/* Actions */}
