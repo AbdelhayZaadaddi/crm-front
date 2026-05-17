@@ -3,10 +3,11 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Plus, Phone, Calendar, Mail, RefreshCw, Monitor,
-  Clock, User, Pencil, Trash2, AlertTriangle,
+  Clock, User as UserIcon, Pencil, Trash2, AlertTriangle,
 } from 'lucide-react'
 import { getTasks, deleteTask, createTask, updateTask } from '@/lib/tasks'
-import type { Task, TaskType, TaskStatus, TaskPriority, TaskRequest } from '@/lib/types'
+import { getMe, getUsers } from '@/lib/user'
+import type { Task, TaskType, TaskStatus, TaskPriority, TaskRequest, User } from '@/lib/types'
 import TaskModal from '@/components/TaskModal'
 
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -136,7 +137,7 @@ function TaskCard({
           )}
           {task.assignedUserName && (
             <div className="flex items-center gap-1 text-[11px] text-[#6b7280]">
-              <User size={10} />
+              <UserIcon size={10} />
               <span>{task.assignedUserName}</span>
             </div>
           )}
@@ -172,11 +173,24 @@ export default function TasksPage() {
   const [modal, setModal] = useState<{ open: boolean; task: Task | null }>({ open: false, task: null })
   const [filterType, setFilterType] = useState<TaskType | 'ALL'>('ALL')
   const [filterPriority, setFilterPriority] = useState<TaskPriority | 'ALL'>('ALL')
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null
+    const cached = localStorage.getItem('user')
+    return cached ? (JSON.parse(cached) as User) : null
+  })
+  const [users, setUsers] = useState<User[]>([])
 
   useEffect(() => {
     getTasks()
       .then(setTasks)
       .finally(() => setLoading(false))
+
+    getMe().then(u => {
+      setCurrentUser(u)
+      localStorage.setItem('user', JSON.stringify(u))
+    }).catch(() => {})
+
+    getUsers().then(setUsers).catch(() => {})
   }, [])
 
   const filtered = useMemo(
@@ -329,6 +343,8 @@ export default function TasksPage() {
       {modal.open && (
         <TaskModal
           task={modal.task}
+          users={users}
+          currentUserId={currentUser?.id ?? null}
           onSave={handleSave}
           onClose={() => setModal({ open: false, task: null })}
         />
