@@ -103,7 +103,7 @@ export default function CampaignsPage() {
                 ) : campaigns.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64 text-center">
                         <p className="text-[14px] text-[#9ca3af]">No campaigns yet</p>
-                        <p className="text-[12.5px] text-[#c4cac9] mt-1">Click "New Campaign" to create one</p>
+                        <p className="text-[12.5px] text-[#c4cac9] mt-1">Click &ldquo;New Campaign&rdquo; to create one</p>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-6">
@@ -179,7 +179,6 @@ function CampaignCard({campaign, sending, onEdit, onDelete, onSend,}: {
     const  [deleting, setDeleting] = useState(false)
 
     const  isDraft = campaign.status === 'DRAFT'
-    const isSent = campaign.  status === 'SENT'
 
     async function handleDelete( ) {
         setDeleting(true )

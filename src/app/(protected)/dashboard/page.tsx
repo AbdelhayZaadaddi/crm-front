@@ -102,29 +102,31 @@ function DonutChart({ data, colorMap }: { data: DistributionEntry[]; colorMap: R
   const cy = 68
   const sw = 18
   const circumference = 2 * Math.PI * r
-  let cumAngle = -90
+  const segments = data.reduce<{ d: DistributionEntry; dash: number; rotation: number }[]>(
+    (acc, d) => {
+      const frac = d.count / total
+      const prev = acc[acc.length - 1]
+      const rotation = prev ? prev.rotation + (prev.d.count / total) * 360 : -90
+      acc.push({ d, dash: frac * circumference, rotation })
+      return acc
+    },
+    [],
+  )
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
       <svg width={136} height={136} viewBox="0 0 136 136" style={{ flexShrink: 0 }}>
-        {data.map((d, i) => {
-          const frac = d.count / total
-          const angle = frac * 360
-          const dash = frac * circumference
-          const rotation = cumAngle
-          cumAngle += angle
-          return (
-            <circle
-              key={i}
-              cx={cx} cy={cy} r={r}
-              fill="none"
-              stroke={colorMap[d.label] ?? '#e5e7eb'}
-              strokeWidth={sw}
-              strokeDasharray={`${dash} ${circumference}`}
-              transform={`rotate(${rotation} ${cx} ${cy})`}
-            />
-          )
-        })}
+        {segments.map(({ d, dash, rotation }, i) => (
+          <circle
+            key={i}
+            cx={cx} cy={cy} r={r}
+            fill="none"
+            stroke={colorMap[d.label] ?? '#e5e7eb'}
+            strokeWidth={sw}
+            strokeDasharray={`${dash} ${circumference}`}
+            transform={`rotate(${rotation} ${cx} ${cy})`}
+          />
+        ))}
         {/* Centre label */}
         <text x={cx} y={cy - 7} textAnchor="middle" fontSize={20} fontWeight={700} fill="#1a1d20">{total}</text>
         <text x={cx} y={cy + 10} textAnchor="middle" fontSize={9.5} fill="#9ca3af">total</text>
