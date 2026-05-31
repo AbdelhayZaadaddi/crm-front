@@ -62,3 +62,76 @@ export interface TaskRequest {
   deadline?: string | null
   assignedUserId?: number | null
 }
+
+//---- Customers ---------------------------------
+export interface Customer {
+  id: number
+  name:  string
+  email: string | null
+  phone: string | null
+  company: string | null
+  notes: string | null
+  createdAt: string
+   updatedAt : string
+}
+
+export interface CustomerRequest {
+  name: string
+  email? : string | null
+  phone?: string | null
+  company?: string | null
+   notes? : string |   null
+}
+
+// Analytics ──────────────────────────────────
+export interface OverviewResponse {
+  totalCustomers: number
+  newCustomersThisMonth: number
+  totalCampaigns: number
+  sentCampaigns: number
+  draftCampaigns: number
+  totalTasks: number
+  todoTasks: number
+  inProgressTasks: number
+  doneTasks: number
+  cancelledTasks: number
+  overdueTasks: number
+}
+
+export interface MonthlyCountDTO {
+  year: number
+  month: number
+  label: string
+  count: number
+}
+
+export interface DistributionEntry {
+  label: string
+  count: number
+}
+
+export interface TaskByUserDTO {
+  userId: number
+  userName: string
+  taskCount: number
+}
+
+// Campaign ___________________________________-
+export type CampaignStatus = 'DRAFT' | 'SENT'
+
+export interface Campaign {
+  id: number
+  name: string
+  subject: string | null
+  body: string | null
+  status:  CampaignStatus
+  sentAt: string | null
+  createdAt: string
+  updatedAt :  string
+}
+
+export interface CampaignRequest {
+  name: string
+  subject?: string  | null
+   body?: string | null
+}
