@@ -322,29 +322,36 @@ export default function DashboardPage() {
   const [campaignStatus, setCampaignStatus] = useState<DistributionEntry[]>([])
   const [campaignMonthly, setCampaignMonthly] = useState<MonthlyCountDTO[]>([])
   const [loading, setLoading] = useState(true)
+  const [errors, setErrors] = useState<string[]>([])
 
   useEffect(() => {
-    Promise.all([
-      analytics.getOverview(),
-      analytics.getCustomerGrowth(),
-      analytics.getTaskStatus(),
-      analytics.getTaskPriority(),
-      analytics.getTaskType(),
-      analytics.getTaskWorkload(),
-      analytics.getCampaignStatus(),
-      analytics.getCampaignMonthly(),
-    ])
-      .then(([ov, cg, ts, tp, tt, tw, cs, cm]) => {
-        setOverview(ov)
-        setCustomerGrowth(cg)
-        setTaskStatus(ts)
-        setTaskPriority(tp)
-        setTaskType(tt)
-        setTaskWorkload(tw)
-        setCampaignStatus(cs)
-        setCampaignMonthly(cm)
+    const calls = [
+      { key: 'overview',        fn: analytics.getOverview,        set: setOverview },
+      { key: 'customer growth', fn: analytics.getCustomerGrowth,  set: setCustomerGrowth },
+      { key: 'task status',     fn: analytics.getTaskStatus,      set: setTaskStatus },
+      { key: 'task priority',   fn: analytics.getTaskPriority,    set: setTaskPriority },
+      { key: 'task type',       fn: analytics.getTaskType,        set: setTaskType },
+      { key: 'task workload',   fn: analytics.getTaskWorkload,    set: setTaskWorkload },
+      { key: 'campaign status', fn: analytics.getCampaignStatus,  set: setCampaignStatus },
+      { key: 'campaign monthly',fn: analytics.getCampaignMonthly, set: setCampaignMonthly },
+    ] as const
+
+    Promise.allSettled(calls.map(c => c.fn()))
+      .then(results => {
+        const failed: string[] = []
+        results.forEach((r, i) => {
+          const c = calls[i]
+          if (r.status === 'fulfilled') {
+            ;(c.set as (v: unknown) => void)(r.value)
+          } else {
+            const err = r.reason as { response?: { status?: number; data?: unknown }; message?: string }
+            const status = err?.response?.status
+            console.error(`[dashboard] ${c.key} failed`, status ?? '', err?.response?.data ?? err?.message ?? err)
+            failed.push(status ? `${c.key} (HTTP ${status})` : c.key)
+          }
+        })
+        setErrors(failed)
       })
-      .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
@@ -364,6 +371,21 @@ export default function DashboardPage() {
           Overview of your CRM workspace
         </p>
       </div>
+
+      {/* Error banner */}
+      {errors.length > 0 && !loading && (
+        <div style={{
+          background: '#fff1f2',
+          border: '1px solid #fecdd3',
+          color: '#9f1239',
+          borderRadius: 8,
+          padding: '10px 14px',
+          fontSize: 12.5,
+          marginBottom: 14,
+        }}>
+          <strong>Some analytics failed to load:</strong> {errors.join(', ')}. Check the console for details.
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div style={{
